@@ -1,1 +1,11 @@
-###Code plan
+###Code plan###
+
+#Steps:
+# 1. Upload hop data into a usable format
+# 2. Create Figures
+# 3. Run stats
+
+######
+# 1. Upload data
+######
+
