@@ -1,0 +1,41 @@
+###Code plan###
+
+#Steps:
+# 1. Upload hop data into a usable format
+# 2. Create Figures
+# 3. Run stats
+
+######
+# 1. Upload data
+######
+
+#Set working Directory
+setwd("~/GitHub/circr/")
+
+
+#Load data file
+DATA <- "hop_data"
+
+#Check directory
+list.files(DATA, pattern= "*.txt|*.csv")
+
+#Set working directory
+setwd(DATA)
+
+
+#edited Val's pythong notebook to correctly add the hours. Now need to update running code and convert to R. 
+
+#Load Libraries
+library(dplyr)
+
+
+####
+#july6=pd.read_csv('pilot_samples/July 06, 2022.txt', header=None, sep='\t')
+#print(july6.head())
+
+#count number of rows
+#print(len(july6.index))
+####
+
+
+july6=read

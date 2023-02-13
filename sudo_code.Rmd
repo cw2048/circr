@@ -24,3 +24,18 @@ setwd(DATA)
 
 
 #edited Val's pythong notebook to correctly add the hours. Now need to update running code and convert to R. 
+
+#Load Libraries
+library(dplyr)
+
+
+####
+#july6=pd.read_csv('pilot_samples/July 06, 2022.txt', header=None, sep='\t')
+#print(july6.head())
+
+#count number of rows
+#print(len(july6.index))
+####
+
+
+july6=read
