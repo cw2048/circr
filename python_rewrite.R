@@ -46,6 +46,8 @@ length(july6)
 #select all but last column
 df <- select(july6, (V1:V60))
 
+
+
 ####Bird IDs
 
 
@@ -65,7 +67,31 @@ cage_4 = df[73:96,]
 
 #traspose
 tc_1 <- t(cage_1)
-rownames(tc_1) <- colnames(cage_1)
-colnames(tc_1) <- rownames(cage_1)
+#rownames(tc_1) <- colnames(cage_1)
+#colnames(tc_1) <- rownames(cage_1)
 
-barplot(tc_1)
+##############
+
+
+#install.packages("devtools")
+#devtools::install_github("rcorty/actogrammr")
+
+library(actogrammr)
+
+f <- file.path(system.file(package = 'actogrammr'), 'testdata')
+d <- read_clock_lab_file(file_name = list.files(path = f, full.names = TRUE)[1])
+
+
+b <- bin_data(data = d, minutes_per_bin = 6)
+
+plot_actogram(data = b, start_date = '2010-01-01')
+
+
+###############
+
+
+#Read in file data
+
+data <- july6
+
+
