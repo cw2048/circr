@@ -18,20 +18,20 @@
 #' plot_actogram(data = b, start_date = '2010-01-01')
 #' }
 
-plot_actogram <- function(data,
-                          start_date = min(data$date),
-                          end_date = max(data$date)) {
+plot_acto <- function(data,
+                          start_date = min(data$Date),
+                          end_date = max(data$Date)) {
   
-  bin <- hour <- file_name <- bin_act <- bin_light <- 'fake_global_for_CRAN'
+  #bin <- Hour <- file_name <- bin_act <- bin_light <- 'fake_global_for_CRAN'
   
   data %>%
-    dplyr::filter(date > start_date, date < end_date) %>%
-    ggplot2::ggplot(mapping = ggplot2::aes(xmin = as.numeric(interaction(hour, bin, lex.order = TRUE)),
-                                           xmax = as.numeric(interaction(hour, bin, lex.order = TRUE)) + 1,
+    #dplyr::filter(Date > start_date, Date < end_date) %>%
+    ggplot2::ggplot(mapping = ggplot2::aes(xmin = as.numeric(interaction(Hour, bin, lex.order = TRUE)),
+                                           xmax = as.numeric(interaction(Hour, bin, lex.order = TRUE)) + 1,
                                            ymin = 0)) +
     ggplot2::geom_rect(mapping = ggplot2::aes(ymax = max(bin_act, na.rm = TRUE), fill = bin_light), alpha = 0.6) +
     ggplot2::geom_rect(mapping = ggplot2::aes(ymax = bin_act)) +
-    ggplot2::facet_grid(facets = date~.) +
+    ggplot2::facet_grid(facets = Date~.) +
     ggplot2::scale_fill_gradient(low = 'white', high = 'lightblue', guide = FALSE) +
     ggplot2::theme_void() +
     ggplot2::theme(strip.text = ggplot2::element_blank(),

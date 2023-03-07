@@ -1,27 +1,27 @@
 {
-    "id": "3E33DC11",
-    "path": "~/GitHub/circr/python_rewrite.R",
-    "project_path": "python_rewrite.R",
+    "id": "8A34824C",
+    "path": "~/GitHub/circr/read_clock_lab.R",
+    "project_path": "read_clock_lab.R",
     "type": "r_source",
-    "hash": "1781294416",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1675269293864.0,
+    "created": 1678143965454.0,
     "source_on_save": false,
-    "relative_order": 2,
+    "relative_order": 13,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "48,0",
-        "scrollLine": "32"
+        "cursorPosition": "28,1",
+        "scrollLine": "8"
     },
     "folds": "",
-    "lastKnownWriteTime": 1677692619,
+    "lastKnownWriteTime": 1677691260,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1677692619413,
+    "last_content_update": 1677691260,
     "read_only": false,
     "read_only_alternatives": []
 }

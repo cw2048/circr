@@ -1,0 +1,41 @@
+
+
+
+read_files <- function(files) {
+  
+  #files <- list.files(path = "~/GitHub/circr/hop_data/")
+  l <- list()
+  for (file in files) {
+    
+    l[[file]] <- read_clock_file(file_name = file)
+    
+  
+    #l <- append(l, data)
+    
+
+    #l[[file]] <- data
+    print(file)    #tracks progress
+  }  
+  
+  dat <- do.call(what = rbind,
+                   args = l)
+  return(dat)
+  
+}
+
+
+# 
+# read_clock_lab_files <- function(file_names) {
+#   
+#   mouse_data <- list()
+#   for (file_name in file_names) {
+#     
+#     mouse_data[[file_name]] <- read_clock_lab_file(file_name = file_name)
+#     
+#   }
+#   
+#   d <- do.call(what = rbind,
+#                args = mouse_data)
+#   
+#   return(d)
+# }

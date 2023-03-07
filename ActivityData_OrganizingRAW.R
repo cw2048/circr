@@ -1,0 +1,175 @@
+library(readr)
+library(reshape2)
+library(ggplot2)
+library(foreign)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(anytime)
+library(data.table)
+library(lme4)
+library(lsmeans)
+
+# Set working directory
+setwd("~/GitHub/circr/hop_data/")
+
+####### SKIP ORGANIZATION UNLESS MODIFYING FINAL DATASET ########.
+
+# Converting all files in wd to txt:
+#files <- list.files(path="~/Documents/ALAN/PHASE 4/ActivityDataR/")
+
+#for (f in files){
+#  write.table(read_excel(f), file = gsub('.xlsx$', '.txt', f))}
+
+##############################.
+####   Organize p4  Data  ####
+##############################.
+
+
+files <- list.files(path = "~/GitHub/circr/hop_data/")
+l <- list()
+for (k in 1:length(files)) {
+  
+  temp <- read_delim(files[k], "\t", escape_double = FALSE, trim_ws = TRUE, col_names = FALSE)
+  temp <- Filter(function(x)!all(is.na(x)), temp)   #removes NA column 61
+  temp <- na.omit(temp)   #removes empty rows between birds
+  colnames(temp) <- seq(1,60,1)   # numbers columns as minutes  1-60
+  temp$Cage <- rep(1:24, each=24)    #names cages 1-24
+  temp$Hour <- rep(seq(0,23,1), 24)   #assigns hours 0-23
+  
+  temp <- temp %>% gather(Minutes, Hops, 1:60)
+  temp$Minutes <- as.numeric(temp$Minutes)
+  
+  #omit bird 6 (died in Dec) & 17 (died in Jan)
+  #temp<-subset(temp, !temp$Cage == 6)
+  #temp<-subset(temp, !temp$Cage == 17)
+  
+  #Assign day/night to the correct hours
+  temp$Phase <- NA
+  
+  for (i in 1:nrow(temp)) {
+    if (temp$Hour[i] < 7 | temp$Hour[i] > 17) {
+      temp$Phase[i] <- "night"
+    }
+    
+    if (temp$Hour[i] > 7 & temp$Hour[i] < 17) {
+      temp$Phase[i] <- "day"
+    }
+    
+    if (temp$Hour[i] == 7) {
+      if (temp$Minutes[i] < 4) {
+        temp$Phase[i] <- "night"
+      }
+      if (temp$Minutes[i] >= 4) {
+        temp$Phase[i] <- "day"
+      }
+    }
+    
+    if (temp$Hour[i] == 17) {
+      if (temp$Minutes[i] < 5) {
+        temp$Phase[i] <- "day"
+      }
+      if (temp$Minutes[i] >= 5) {
+        temp$Phase[i] <- "night"
+      }
+    }
+  }
+  
+  ## re-format date
+  name <- paste(files[k]) 
+  name <- gsub('\\s', '-', name)
+  name <- gsub(',-', '-', name)
+  name <- gsub('.txt', '', name)
+  temp$Date <- name
+  temp$Date<- as.Date(temp$Date, "%B-%d-%Y")
+  
+  
+  #Add treatment IDs
+  temp$treat <- NA
+  for (i in 1:nrow(temp)){
+    
+    if (temp$Cage[i]== 1 | temp$Cage[i] == 5 | temp$Cage[i]== 9 | temp$Cage[i] ==13 | temp$Cage[i] == 17 | temp$Cage[i]==21) {
+      temp$treat[i] <- "LD"}
+    
+    if (temp$Cage[i]== 3 | temp$Cage[i] == 7 | temp$Cage[i]== 11 | temp$Cage[i] ==15 | temp$Cage[i] == 19 | temp$Cage[i]==23) {
+      temp$treat[i] <- "LL"}
+    
+    if (temp$Cage[i]== 2 | temp$Cage[i] == 10 | temp$Cage[i]== 14 | temp$Cage[i] ==16 | temp$Cage[i] == 18 | temp$Cage[i]==22) {
+      temp$treat[i] <- "DL"}
+    
+    if (temp$Cage[i]== 4 | temp$Cage[i] == 6 | temp$Cage[i]== 8 | temp$Cage[i] ==12 | temp$Cage[i] == 20 | temp$Cage[i]==24) {
+      temp$treat[i] <- "DD"}
+  }    
+  
+
+  # # add column for stage of experiment
+  # temp$stage <- NA
+  # for (i in 1:nrow(temp)){
+  # 
+  #   if (temp$Date[i] < "2018-12-07") {
+  #     temp$stage[i] <- 1}else{
+  # 
+  #       if (temp$Date[i] == "2018-12-07" & temp$Hour[i] < 17) {
+  #         temp$stage[i] <-1}else{
+  # 
+  #           if (temp$Date[i] == "2018-12-07" & temp$Hour[i] >= 17) {
+  #             temp$stage[i] <-2}else{
+  # 
+  #               if(temp$Date[i] > "2018-12-07" & temp$Date[i] < "2019-01-29") {
+  #                 temp$stage[i] <-2}else{
+  # 
+  #                   if(temp$Date[i] == "2019-01-29" & temp$Hour[i] < 17) {
+  #                     temp$stage[i] <-2}else{
+  # 
+  #                       if(temp$Date[i] == "2019-01-29" & temp$Hour[i] >= 17) {
+  #                         temp$stage[i] <-3}else{
+  # 
+  #                           if (temp$Date[i] > "2019-01-29" & temp$Date[i] < "2019-03-28") {
+  #                             temp$stage[i] <-3}else{
+  # 
+  #                               if (temp$Date[i] == "2019-03-28" & temp$Hour[i] < 17) {
+  #                                 temp$stage[i] <-3}else{
+  # 
+  #                                   if (temp$Date[i] == "2019-03-28" & temp$Hour[i] >= 17) {
+  #                                     temp$stage[i] <-4}else{
+  # 
+  #                                       temp$stage[i] <-4}
+  #                                }}}}}}}}}
+
+  
+  l[[k]] <- temp
+  print(k)    #tracks progress
+}  
+
+data <- data.table::rbindlist(l)
+
+##save new dataset 
+fwrite(data, file="fulldata_phase4.csv", append=FALSE)
+
+
+#########################.
+####   Read in data  ####
+#########################.
+
+#### Data compiled in ActivityAnalysis_2018 file
+olddata <-read_csv("~/Documents/ALAN/Phase 4/olddata.csv")
+newdata <-read_csv("~/Documents/ALAN/Phase 4/newdata.csv")
+alldata <-read_csv("~/Documents/ALAN/2018/habit.csv")
+alldata$Date<-as.Date(alldata$Date, "%B-%d-%Y")
+alldata$stage<-as.character(alldata$stage)
+
+#subset for nighttime
+night <- subset(alldata, Phase=="night")
+night <- subset(night, !Cage==38)
+night <- subset(night, !Cage==39)
+night <- subset(night, !Cage==41)
+night$stage<-as.character(night$stage)
+
+Nnight<-subset(newdata, Phase=="night")
+Nnight$stage<-as.character(Nnight$stage)
+
+Onight<-subset(olddata, Phase=="night")
+Onight <- subset(Onight, !Cage==38)
+Onight <- subset(Onight, !Cage==39)
+Onight <- subset(Onight, !Cage==41)
+Onight$stage<-as.character(Onight$stage)

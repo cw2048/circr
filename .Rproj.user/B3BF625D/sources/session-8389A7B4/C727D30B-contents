@@ -1,0 +1,66 @@
+#Install Libraries 
+library(readr)
+library(reshape2)
+library(ggplot2)
+library(foreign)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(anytime)
+library(data.table)
+library(lme4)
+library(lsmeans)
+
+
+#Set working Directory
+setwd("~/GitHub/circr/")
+
+
+
+#Run functions in files
+
+#Run codes
+f <- file.path("~/GitHub/circr/hop_data/")
+#dt <- read_clock_files(file_names = list.files(path = f, full.names = TRUE)[1])
+
+dt <- read_files(files = list.files(path = f, full.names = TRUE))
+
+
+
+
+bn <- bin_dat(data = dt, minutes_per_bin = 5)
+
+plot_acto(data = bn, start_date = '2021-07-01')
+
+
+
+
+
+#####################
+
+
+ggplot(mapping = aes(xmin = as.numeric(interaction(Hour, bin, lex.order = TRUE)),
+                                       xmax = as.numeric(interaction(Hour, bin, lex.order = TRUE)) + 1,
+                                       ymin = 0), data = bn) +
+  #geom_rect(mapping = aes(ymax = max(bin_act, na.rm = TRUE), fill = bin_light), alpha = 0.6) +
+  geom_rect(mapping = aes(ymax = bin_act)) +
+  facet_grid(facets = Date~.) 
+  #scale_fill_gradient(low = 'white', high = 'lightblue', guide = FALSE) 
+  # ggplot2::theme_void() +
+  # ggplot2::theme(strip.text = ggplot2::element_blank(),
+  #                axis.title = ggplot2::element_blank(),
+  #                axis.text = ggplot2::element_blank(),
+  #                axis.ticks = ggplot2::element_blank(),
+  #                panel.spacing = ggplot2::unit(x = 0, units = 'mm'),
+  #                strip.background = ggplot2::element_blank(),
+  #                plot.margin = ggplot2::unit(x = c(0, 0, 0, 0), units = 'mm')) +
+  # ggplot2::labs(x = NULL, y = NULL)
+
+
+
+
+
+
+
+
+

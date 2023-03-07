@@ -29,6 +29,9 @@ bin_data <- function(data,
     dplyr::summarise(bin_act = sum(act),
                      bin_light = sum(light)) %>%
     dplyr::ungroup() %>%
+    
+    bn$bin_act <- as.integer(bn$bin_act)
+    
     return()
   
 }

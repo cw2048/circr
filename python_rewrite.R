@@ -78,8 +78,8 @@ tc_1 <- t(cage_1)
 
 library(actogrammr)
 
-f <- file.path(system.file(package = 'actogrammr'), 'testdata')
-d <- read_clock_lab_file(file_name = list.files(path = f, full.names = TRUE)[1])
+f <- file.path("~/GitHub/circr/hop_data/")
+d <- read_clock_file(file_n = list.files(path = f, full.names = TRUE)[1])
 
 
 b <- bin_data(data = d, minutes_per_bin = 6)
@@ -94,4 +94,57 @@ plot_actogram(data = b, start_date = '2010-01-01')
 
 data <- july6
 
+
+#################
+
+#Val's code
+
+
+
+files <- list.files(path = "~/GitHub/circr/hop_data/")
+l <- list()
+for (k in 1:length(files)) {
+  
+  temp <- read_delim(files[k], "\t", escape_double = FALSE, trim_ws = TRUE, col_names = FALSE, show_col_types = FALSE)
+  temp <- Filter(function(x)!all(is.na(x)), temp)   #removes NA column 61
+  temp <- na.omit(temp)   #removes empty rows between birds
+  colnames(temp) <- seq(1,60,1)   # numbers columns as minutes  1-60
+  temp$Cage <- rep(1:24, each=24)    #names cages 1-24
+  temp$Hour <- rep(seq(0,23,1), 24)   #assigns hours 0-23
+  
+  temp <- temp %>% gather(Minutes, Hops, 1:60)
+  temp$Minutes <- as.numeric(temp$Minutes)
+  
+
+  #Assign day/night to the correct hours
+  temp$Phase <- NA
+
+  for (i in 1:nrow(temp)) {
+    if (temp$Hour[i] < 9 | temp$Hour[i] >= 21) {
+      temp$Phase[i] <- "night"
+    }
+
+    if (temp$Hour[i] >= 9 & temp$Hour[i] < 21) {
+      temp$Phase[i] <- "day"
+    }
+
+
+  }
+}
+
+
+
+
+###################
+
+
+
+
+f <- file.path("~/GitHub/circr/hop_data/")
+dat <- read_clock_file(file_name = list.files(path = f, full.names = TRUE)[1])
+
+
+bn <- bin_dat(data = dat, minutes_per_bin = 5)
+
+plot_actogram(data = bn, start_date = '2010-01-01')
 
